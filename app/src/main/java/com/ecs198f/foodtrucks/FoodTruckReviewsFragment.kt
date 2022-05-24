@@ -100,14 +100,14 @@ class FoodTruckReviewsFragment(list: List<FoodReview>) : Fragment() {
 
     private fun updateUI(account:GoogleSignInAccount?) {
         Log.d("updateUI", if (account == null) "null" else account.displayName!!)
-        //if(account != null)
-        //{
+        if(account != null)
+        {
             bindingReview.BottonSignIn.visibility = View.INVISIBLE
-        //}
-        //else
-        //{
-            //bindingReview.BottonSignIn.visibility = View.VISIBLE
-        //}
+        }
+        else
+        {
+            bindingReview.BottonSignIn.visibility = View.VISIBLE
+        }
     }
 
     override fun onStart(){

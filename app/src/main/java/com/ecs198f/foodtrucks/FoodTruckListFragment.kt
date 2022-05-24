@@ -37,6 +37,7 @@ class FoodTruckListFragment : Fragment() {
                     response: Response<List<FoodTruck>>
                 ) {
                     recyclerViewAdapter.updateItems(response.body()!!)
+
                 }
 
                 override fun onFailure(call: Call<List<FoodTruck>>, t: Throwable) {

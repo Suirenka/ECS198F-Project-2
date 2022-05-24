@@ -20,5 +20,5 @@ interface FoodTruckDao {
     suspend fun removeTruck(truck: FoodTruck)
 
     @Query("DELETE FROM FoodTruck")
-    suspend fun removeAllTruck()
+    suspend fun removeAllData()
 }
