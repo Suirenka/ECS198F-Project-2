@@ -25,52 +25,35 @@ class FoodTruckReviewsFragment(list: List<FoodReview>) : Fragment() {
 
     private lateinit var bindingReview: FragmentFoodTruckReviewsBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        bindingReview = FragmentFoodTruckReviewsBinding
+            .inflate(inflater, container, false)
+
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("699423245763-insnbbp034ep600msiqfan5g0b2pau67.apps.googleusercontent.com")
             .requestEmail()
             .build()
 
-        // Build a GoogleSignInClient with the options specified by gso.
         (requireActivity() as MainActivity).apply {
             val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-
-
             fun signIn() {
                 val signInIntent = mGoogleSignInClient.signInIntent
                 startActivityForResult(signInIntent, RC_SIGN_IN)
             }
 
-            signIn()
-
+            bindingReview.BottonSignIn.setOnClickListener{
+                signIn()
+                val account = GoogleSignIn.getLastSignedInAccount(this)
+                Log.d("Sign In", "DONE")
+                updateUI(account)
+            }
 
         }
-
-    }
-
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-
-        // Inflate the layout for this fragment
-        bindingReview = FragmentFoodTruckReviewsBinding
-            .inflate(inflater, container, false)
-
-
-        bindingReview.BottonSignIn.setOnClickListener{
-            bindingReview.BottonSignIn.text = "Sign-in Request"
-        }
-
-
-
 
 
 
@@ -95,7 +78,6 @@ class FoodTruckReviewsFragment(list: List<FoodReview>) : Fragment() {
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account = completedTask.getResult(ApiException::class.java)
-
             // Signed in successfully, show authenticated UI.
             updateUI(account)
         } catch (e: ApiException) {
@@ -116,15 +98,16 @@ class FoodTruckReviewsFragment(list: List<FoodReview>) : Fragment() {
 
     }
 
-    private fun updateUI(account:GoogleSignInAccount) {
-        if(account != null)
-        {
+    private fun updateUI(account:GoogleSignInAccount?) {
+        Log.d("updateUI", if (account == null) "null" else account.displayName!!)
+        //if(account != null)
+        //{
             bindingReview.BottonSignIn.visibility = View.INVISIBLE
-        }
-        else
-        {
-            bindingReview.BottonSignIn.visibility = View.VISIBLE
-        }
+        //}
+        //else
+        //{
+            //bindingReview.BottonSignIn.visibility = View.VISIBLE
+        //}
     }
 
     override fun onStart(){

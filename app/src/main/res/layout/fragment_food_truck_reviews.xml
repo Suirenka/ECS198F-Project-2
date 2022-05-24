@@ -12,26 +12,28 @@
         android:layout_height="48dp"
         android:layout_marginStart="32dp"
         android:text="POST"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/BottonSignIn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.85"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/BottonSignIn"
         app:layout_constraintVertical_bias="0.849"
         tools:ignore="DuplicateClickableBoundsCheck" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/foodReviewListRecyclerView"
         android:layout_width="379dp"
-        android:layout_height="532dp"
+        android:layout_height="0dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintBottom_toBottomOf="@id/BottonSignIn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.124" />
+        app:layout_constraintVertical_bias="0.095" />
 
     <Button
         android:id="@+id/BottonSignIn"
@@ -42,7 +44,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/foodReviewListRecyclerView"
         app:layout_constraintVertical_bias="0.849" />
 
 
