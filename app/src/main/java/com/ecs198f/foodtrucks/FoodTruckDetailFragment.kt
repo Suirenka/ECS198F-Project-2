@@ -69,6 +69,11 @@ class FoodTruckDetailFragment : Fragment() {
                             if (items.isEmpty()) {
                                 db2.fooditemDao().addItems(list1)
                             }
+                            else
+                            {
+                                db2.fooditemDao().removeAllItem()
+                                db2.fooditemDao().addItems(list1)
+                            }
                         }
                         foodTruckService.listFoodReviews(it.id).enqueue(object : Callback<List<FoodReview>> {
                             override fun onResponse(
@@ -95,31 +100,31 @@ class FoodTruckDetailFragment : Fragment() {
                             }
 
                             override fun onFailure(call: Call<List<FoodReview>>, t: Throwable) {
-                                lifecycleScope.launch {
-                                    list1 = db2.fooditemDao().listAllFoodItems(it.id)
-                                    DisconnectAdapter = DisConeectedAdap(this@FoodTruckDetailFragment, list1)
-                                    viewPager = view.findViewById(R.id.pager)
-                                    viewPager.adapter =  DisconnectAdapter
-
-                                    TabLayoutMediator(tabLayout, viewPage ){tab, position ->
-                                        when(position)
-                                        {
-                                            0->{
-                                                tab.text = "MENU"
-                                            }
-                                            1->{
-                                                tab.text = "REVIEWS"
-                                            }
-                                        }
-                                    }.attach()
-                                }
+                                throw t
                             }
                         })
 
                     }
 
                     override fun onFailure(call: Call<List<FoodItem>>, t: Throwable) {
-                        throw t
+                        lifecycleScope.launch {
+                            list1 = db2.fooditemDao().listAllFoodItems(it.id)
+                            DisconnectAdapter = DisConeectedAdap(this@FoodTruckDetailFragment, list1)
+                            viewPager = view.findViewById(R.id.pager)
+                            viewPager.adapter =  DisconnectAdapter
+
+                            TabLayoutMediator(tabLayout, viewPage ){tab, position ->
+                                when(position)
+                                {
+                                    0->{
+                                        tab.text = "MENU"
+                                    }
+                                    1->{
+                                        tab.text = "REVIEWS"
+                                    }
+                                }
+                            }.attach()
+                        }
                     }
                 })
             }

@@ -17,7 +17,7 @@ class DisConeectedAdap(fragment: Fragment, list1: List<FoodItem>): FragmentState
                 fragment = FoodTruckMenuFragment(list1)
             }
             1 ->{
-                fragment = FoodTruckMenuFragment(list1)
+                fragment = FoodTruckReviewsNoConnectionFragment()
             }
             else ->{
                 throw Exception("exception")
