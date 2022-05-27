@@ -7,23 +7,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ecs198f.foodtrucks.databinding.FragmentFoodTruckReviewsBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.awaitResponse
 
 
 const val RC_SIGN_IN = 123
 
 class FoodTruckReviewsFragment(list: List<FoodReview>) : Fragment() {
 
-
-
     private lateinit var bindingReview: FragmentFoodTruckReviewsBinding
+    private val viewModel: TruckIdViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,33 +45,56 @@ class FoodTruckReviewsFragment(list: List<FoodReview>) : Fragment() {
             .requestEmail()
             .build()
 
+        lateinit var mGoogleSignInClient:GoogleSignInClient
+        var account: GoogleSignInAccount? = null
         (requireActivity() as MainActivity).apply {
-            val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-            fun signIn() {
-                val signInIntent = mGoogleSignInClient.signInIntent
-                startActivityForResult(signInIntent, RC_SIGN_IN)
-            }
+            mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+            account = GoogleSignIn.getLastSignedInAccount(this)
+            updateUI(account)
 
-            bindingReview.BottonSignIn.setOnClickListener{
-                signIn()
-                val account = GoogleSignIn.getLastSignedInAccount(this)
-                Log.d("Sign In", "DONE")
-                updateUI(account)
-            }
+            bindingReview.BottonPostReview.setOnClickListener{
+                account = GoogleSignIn.getLastSignedInAccount(this)
+                Log.d("PostClickListener", "Clicked")
+                if (account == null)
+                    Log.d("No account", "Null")
+                else
+                    Log.d("Account in button", account!!.displayName!!)
+                val truckId = viewModel.truckId.value!!
+                val content = bindingReview.editTextReview.text.toString()
+                val review = FoodReview("", truckId, "", "", content, emptyList())
+                val token = "Bearer " + account!!.idToken
+                foodTruckService.createFoodReviews(truckId, token, review).enqueue(object: Callback<Unit> {
+                    override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                        bindingReview.editTextReview.setText("")
 
+                        Log.d("Review created", response.code().toString())
+                    }
+
+                    override fun onFailure(call: Call<Unit>, t: Throwable) {
+
+                    }
+                })
+                viewModel.set(true)
+            }
+        }
+
+        bindingReview.BottonSignIn.setOnClickListener{
+            val signInIntent = mGoogleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
 
 
         return bindingReview.root
-        //return inflater.inflate(R.layout.fragment_food_truck_reviews, container, false)
 
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        Log.d("onActivityResult", requestCode.toString())
         if (requestCode == RC_SIGN_IN) {
+            Log.d("onActivityResult", "success")
             // The Task returned from this call is always completed, no need to attach
             // a listener.
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
@@ -76,11 +105,13 @@ class FoodTruckReviewsFragment(list: List<FoodReview>) : Fragment() {
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        Log.d("handleSignIn", "handleSignIn")
         try {
-            val account = completedTask.getResult(ApiException::class.java)
+            val account:GoogleSignInAccount = completedTask.getResult(ApiException::class.java)
             // Signed in successfully, show authenticated UI.
             updateUI(account)
         } catch (e: ApiException) {
+            Log.d("Catch", e.statusCode.toString())
             bindingReview.BottonSignIn.visibility = View.VISIBLE
         }
     }

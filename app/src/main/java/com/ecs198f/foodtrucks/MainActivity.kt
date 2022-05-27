@@ -2,6 +2,10 @@ package com.ecs198f.foodtrucks
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
 import com.ecs198f.foodtrucks.databinding.ActivityMainBinding
@@ -18,12 +22,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.time.LocalDateTime
 
+class TruckIdViewModel : ViewModel() {
+    private val currentTruckId = MutableLiveData<String>()
+    private val reviewUpdated = MutableLiveData<Boolean>()
+    val truckId: LiveData<String> get() = currentTruckId
+    val updated: LiveData<Boolean> get() = reviewUpdated
+    fun set(id:String) { currentTruckId.value = id }
+    fun set(update:Boolean) { reviewUpdated.value = update }
+}
 class MainActivity : AppCompatActivity() {
     lateinit var db: AppDatabase
     lateinit var db2: AppDatabase
     private lateinit var FoodTruckDao: FoodTruckDao
     private lateinit var FoodItemDao: FoodItemDao
-
+    private val viewModel: TruckIdViewModel by viewModels()
 
     private val gson = GsonBuilder()
         .registerTypeAdapter(LocalDateTime::class.java, object : JsonDeserializer<LocalDateTime> {
